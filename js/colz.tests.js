@@ -3,22 +3,28 @@ var c1, c2, c3;
 $(document).ready(function() {
   // la magia aquí
 
+// c1 = new colz.color('#f26c4f');
+// c1.setAlpha(0.5);
+// c1.setHue(280);
+// console.log(c1);
+// debugger;
+
   test( "Hex Color to other color-spaces", function() {
 
     // Hex color
     c1 = new colz.color('#f26c4f');
 
-    equal( c1.rgb.toString() , "rgb(242,108,79)" );
-    equal( c1.rgba.toString() ,"rgba(242,108,79,1)" );
-    equal( c1.hsl.toString() , "hsl(11,86%,63%)" );
-    equal( c1.hsla.toString() ,"hsla(11,86%,63%,1)" );
+    equal( c1.rgb.toString() , "rgb(242,108,79)", c1.rgb.toString() );
+    equal( c1.rgba.toString() ,"rgba(242,108,79,1)", c1.rgba.toString() );
+    equal( c1.hsl.toString() , "hsl(11,86%,63%)", c1.hsl.toString() );
+    equal( c1.hsla.toString() ,"hsla(11,86%,63%,1)", c1.hsla.toString() );
 
     c1.setAlpha(0.5);
 
-    equal( c1.rgb.toString() , "rgb(242,108,79)" );
-    equal( c1.rgba.toString() ,"rgba(242,108,79,0.5)" );
-    equal( c1.hsl.toString() , "hsl(11,86%,63%)" );
-    equal( c1.hsla.toString() ,"hsla(11,86%,63%,0.5)" );
+    equal( c1.rgb.toString() , "rgb(242,108,79)", c1.rgb.toString() );
+    equal( c1.rgba.toString() ,"rgba(242,108,79,0.5)", c1.rgba.toString() );
+    equal( c1.hsl.toString() , "hsl(11,86%,63%)", c1.hsl.toString() );
+    equal( c1.hsla.toString() ,"hsla(11,86%,63%,0.5)", c1.hsla.toString() );
 
     c1.setHue(280);
 

@@ -19,45 +19,45 @@ var colz = colz || {};
 /* Color constructors */
 
 colz.Rgb = function (col) {
-  this[0] = col[0];
-  this[1] = col[1];
-  this[2] = col[2];
+  this.r = col[0];
+  this.g = col[1];
+  this.b = col[2];
 };
 
 colz.Rgb.prototype.toString = function () {
-  return 'rgb(' + this[0] + ',' + this[1] + ',' + this[2] + ')';
+  return 'rgb(' + this.r + ',' + this.g + ',' + this.b + ')';
 };
 
 colz.Rgba = function (col) {
-  this[0] = col[0];
-  this[1] = col[1];
-  this[2] = col[2];
-  this[3] = col[3];
+  this.r = col[0];
+  this.g = col[1];
+  this.b = col[2];
+  this.a = col[3];
 };
 
 colz.Rgba.prototype.toString = function () {
-  return 'rgba(' + this[0] + ',' + this[1] + ',' + this[2] + ',' + this[3] + ')';
+  return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a + ')';
 };
 
 colz.Hsl = function (col) {
-  this[0] = col[0];
-  this[1] = col[1];
-  this[2] = col[2];
+  this.h = col[0];
+  this.s = col[1];
+  this.l = col[2];
 };
 
 colz.Hsl.prototype.toString = function () {
-  return 'hsl(' + this[0] + ',' + this[1] + '%,' + this[2] + '%)';
+  return 'hsl(' + this.h + ',' + this.s + '%,' + this.l + '%)';
 };
 
 colz.Hsla = function (col) {
-  this[0] = col[0];
-  this[1] = col[1];
-  this[2] = col[2];
-  this[3] = col[3];
+  this.h = col[0];
+  this.s = col[1];
+  this.l = col[2];
+  this.a = col[3];
 };
 
 colz.Hsla.prototype.toString = function () {
-  return 'hsla(' + this[0] + ',' + this[1] + '%,' + this[2] + '%,' + this[3] + ')';
+  return 'hsla(' + this.h + ',' + this.s + '%,' + this.l + '%,' + this.a + ')';
 };
 
 /* Main Colz color object */
@@ -75,10 +75,10 @@ colz.color = function () {
   this.hsla = null;
   this.rgb = null;
   this.rgba = null;
-  this.hslString = null;
+  /*this.hslString = null;
   this.hslaString = null;
   this.rgbString = null;
-  this.rgbaString = null;
+  this.rgbaString = null;*/
 
   // Init
   this.init(arguments);
@@ -101,9 +101,9 @@ colz.color.prototype.init = function (arg) {
     this.hex = arg[0].toLowerCase();
 
     this.rgb = new colz.Rgb(colz.hexToRgb(this.hex));
-    this.r = this.rgb[0];
-    this.g = this.rgb[1];
-    this.b = this.rgb[2];
+    this.r = this.rgb.r;
+    this.g = this.rgb.g;
+    this.b = this.rgb.b;
     this.a = 1.0;
     this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
   }
@@ -121,7 +121,7 @@ colz.color.prototype.init = function (arg) {
 
     this.rgb  = new colz.Rgb([this.r, this.g, this.b]);
     this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
-    this.hex = colz.rgbToHex(this.rgb);
+    this.hex = colz.rgbToHex([this.r, this.g, this.b]);
   }
 
   // Argument is Array -> Rgb[A]
@@ -137,58 +137,59 @@ colz.color.prototype.init = function (arg) {
 
     this.rgb  = new colz.Rgb([this.r, this.g, this.b]);
     this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
-    this.hex = colz.rgbToHex(this.rgb);
+    this.hex = colz.rgbToHex([this.r, this.g, this.b]);
   }
 
   // Common
-  this.hsl = new colz.Hsl(colz.rgbToHsl(this.rgb));
-  this.h = this.hsl[0];
-  this.s = this.hsl[1];
-  this.l = this.hsl[2];
+  this.hsl = new colz.Hsl(colz.rgbToHsl([this.r, this.g, this.b]));
+  this.h = this.hsl.h;
+  this.s = this.hsl.s;
+  this.l = this.hsl.l;
   this.hsla = new colz.Hsla([this.h, this.s, this.l, this.a]);
 }; // init
 
 colz.color.prototype.setHue = function (newhue) {
   this.h = newhue;
-  this.hsl[0] = newhue;
-  this.hsla[0] = newhue;
+  this.hsl.h = newhue;
+  this.hsla.h = newhue;
   this.updateFromHsl();
 }; // setHue
 
 colz.color.prototype.setSat = function (newsat) {
   this.s = newsat;
-  this.hsl[1] = newsat;
-  this.hsla[1] = newsat;
+  this.hsl.s = newsat;
+  this.hsla.s = newsat;
   this.updateFromHsl();
 }; // setSat
 
 colz.color.prototype.setLum = function (newlum) {
   this.l = newlum;
-  this.hsl[2] = newlum;
-  this.hsla[2] = newlum;
+  this.hsl.l = newlum;
+  this.hsla.l = newlum;
   this.updateFromHsl();
 }; // setLum
 
 colz.color.prototype.updateFromHsl = function () {
   // Updates Rgb
   this.rgb = null;
-  this.rgb = new colz.Rgb(colz.hslToRgb(this.h, this.s, this.l));
-  this.r = this.rgb[0];
-  this.g = this.rgb[1];
-  this.b = this.rgb[2];
-  this.rgba[0] = this.rgb[0];
-  this.rgba[1] = this.rgb[1];
-  this.rgba[2] = this.rgb[2];
+  this.rgb = new colz.Rgb(colz.hslToRgb([this.h, this.s, this.l]));
+
+  this.r = this.rgb.r;
+  this.g = this.rgb.g;
+  this.b = this.rgb.b;
+  this.rgba.r = this.rgb.r;
+  this.rgba.g = this.rgb.g;
+  this.rgba.b = this.rgb.b;
 
   // Updates Hex
   this.hex = null;
-  this.hex = colz.rgbToHex(this.rgb);
+  this.hex = colz.rgbToHex([this.r, this.g, this.b]);
 };
 
 colz.color.prototype.setAlpha = function (newalpha) {
   this.a = newalpha;
-  this.hsla[3] = newalpha;
-  this.rgba[3] = newalpha;
+  this.hsla.a = newalpha;
+  this.rgba.a = newalpha;
 };
 
 /* Public Functions */
