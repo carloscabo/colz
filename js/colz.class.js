@@ -10,7 +10,7 @@
  * http://carloscabo.com
  *
  * Some formulas borrowed from Wikipedia or other authors.
- */
+*/
 
 /* Namespace container */
 
@@ -24,7 +24,7 @@ colz.Rgb = function (col) {
   this[2] = col[2];
 };
 
-colz.Rgb.prototype.toString = function() {
+colz.Rgb.prototype.toString = function () {
   return 'rgb(' + this[0] + ',' + this[1] + ',' + this[2] + ')';
 };
 
@@ -35,7 +35,7 @@ colz.Rgba = function (col) {
   this[3] = col[3];
 };
 
-colz.Rgba.prototype.toString = function() {
+colz.Rgba.prototype.toString = function () {
   return 'rgba(' + this[0] + ',' + this[1] + ',' + this[2] + ',' + this[3] + ')';
 };
 
@@ -45,7 +45,7 @@ colz.Hsl = function (col) {
   this[2] = col[2];
 };
 
-colz.Hsl.prototype.toString = function() {
+colz.Hsl.prototype.toString = function () {
   return 'hsl(' + this[0] + ',' + this[1] + '%,' + this[2] + '%)';
 };
 
@@ -56,47 +56,47 @@ colz.Hsla = function (col) {
   this[3] = col[3];
 };
 
-colz.Hsla.prototype.toString = function() {
+colz.Hsla.prototype.toString = function () {
   return 'hsla(' + this[0] + ',' + this[1] + '%,' + this[2] + '%,' + this[3] + ')';
 };
 
 /* Main Colz color object */
 
 colz.color = function () {
-  this.hex;
-  this.r;
-  this.g;
-  this.b;
-  this.h;
-  this.s;
-  this.l;
-  this.a;
-  this.hsl;
-  this.hsla;
-  this.rgb;
-  this.rgba;
-  this.hslString;
-  this.hslaString;
-  this.rgbString;
-  this.rgbaString;
+  this.hex = null;
+  this.r = null;
+  this.g = null;
+  this.b = null;
+  this.h = null;
+  this.s = null;
+  this.l = null;
+  this.a = null;
+  this.hsl = null;
+  this.hsla = null;
+  this.rgb = null;
+  this.rgba = null;
+  this.hslString = null;
+  this.hslaString = null;
+  this.rgbString = null;
+  this.rgbaString = null;
 
   // Init
   this.init(arguments);
 
 }; //colz.color
 
-colz.color.prototype.init = function(arg) {
+colz.color.prototype.init = function (arg) {
 
   // Argument is string -> Hex color
-  if (typeof arg[0] == 'string') {
+  if (typeof arg[0] === 'string') {
 
     // Add initial '#' if missing
-    if (arg[0][0] != '#') { arg[0] = '#' + arg[0]; }
+    if (arg[0][0] !== '#') { arg[0] = '#' + arg[0]; }
 
     // If Hex in #fff format convert to #ffffff
-    if (arg[0].length < 7 ) {
+    if (arg[0].length < 7) {
       arg[0] = '#' + arg[0][1] + arg[0][1] + arg[0][2] + arg[0][2] + arg[0][3] + arg[0][3];
-    };
+    }
 
     this.hex = arg[0].toLowerCase();
 
@@ -109,11 +109,11 @@ colz.color.prototype.init = function(arg) {
   }
 
   // First argument is number -> Rgb[A]
-  if (typeof arg[0] == 'number') {
+  if (typeof arg[0] === 'number') {
     this.r = arg[0];
     this.g = arg[1];
     this.b = arg[2];
-    if (typeof arg[3] == 'undefined') {
+    if (typeof arg[3] === 'undefined') {
       this.a = 1.0;
     } else {
       this.a = arg[3];
@@ -129,7 +129,7 @@ colz.color.prototype.init = function(arg) {
     this.r = arg[0][0];
     this.g = arg[0][1];
     this.b = arg[0][2];
-    if (typeof arg[0][3] == 'undefined') {
+    if (typeof arg[0][3] === 'undefined') {
       this.a = 1.0;
     } else {
       this.a = arg[0][3];
@@ -146,30 +146,30 @@ colz.color.prototype.init = function(arg) {
   this.s = this.hsl[1];
   this.l = this.hsl[2];
   this.hsla = new colz.Hsla([this.h, this.s, this.l, this.a]);
-} // init
+}; // init
 
-colz.color.prototype.setHue = function(newhue) {
+colz.color.prototype.setHue = function (newhue) {
   this.h = newhue;
   this.hsl[0] = newhue;
   this.hsla[0] = newhue;
   this.updateFromHsl();
 }; // setHue
 
-colz.color.prototype.setSat = function(newsat) {
+colz.color.prototype.setSat = function (newsat) {
   this.s = newsat;
   this.hsl[1] = newsat;
   this.hsla[1] = newsat;
   this.updateFromHsl();
 }; // setSat
 
-colz.color.prototype.setLum = function(newlum) {
+colz.color.prototype.setLum = function (newlum) {
   this.l = newlum;
   this.hsl[2] = newlum;
   this.hsla[2] = newlum;
   this.updateFromHsl();
 }; // setLum
 
-colz.color.prototype.updateFromHsl = function() {
+colz.color.prototype.updateFromHsl = function () {
   // Updates Rgb
   this.rgb = null;
   this.rgb = new colz.Rgb(colz.hslToRgb(this.h, this.s, this.l));
@@ -183,9 +183,9 @@ colz.color.prototype.updateFromHsl = function() {
   // Updates Hex
   this.hex = null;
   this.hex = colz.rgbToHex(this.rgb);
-}
+};
 
-colz.color.prototype.setAlpha = function(newalpha) {
+colz.color.prototype.setAlpha = function (newalpha) {
   this.a = newalpha;
   this.hsla[3] = newalpha;
   this.rgba[3] = newalpha;
@@ -196,21 +196,21 @@ colz.color.prototype.setAlpha = function(newalpha) {
 colz.hexToRgb = function (hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? [
-  parseInt(result[1], 16),
-  parseInt(result[2], 16),
-  parseInt(result[3], 16)
+    parseInt(result[1], 16),
+    parseInt(result[2], 16),
+    parseInt(result[3], 16)
   ] : null;
 };
 
 colz.componentToHex = function (c) {
   var hex = c.toString(16);
-  return hex.length == 1 ? "0" + hex : hex;
-}
+  return hex.length === 1 ? "0" + hex : hex;
+};
 
 // You can pass 3 numeric values or 1 Array
 colz.rgbToHex = function () { //r, g, b
   var r, g, b;
-  if(arguments.length > 1) {
+  if (arguments.length > 1) {
     r = arguments[0];
     g = arguments[1];
     b = arguments[2];
@@ -231,10 +231,10 @@ colz.rgbToHex = function () { //r, g, b
 * @param   Number  b       The blue color value
 * @return  Array           The HSL representation
 */
-colz.rgbToHsl = function (){
+colz.rgbToHsl = function () {
   var r, g, b;
 
-  if (typeof arguments[0] == 'number') {
+  if (typeof arguments[0] === 'number') {
     r = arguments[0];
     g = arguments[1];
     b = arguments[2];
@@ -244,20 +244,26 @@ colz.rgbToHsl = function (){
     b = arguments[0][2];
   }
 
-  r /= 255, g /= 255, b /= 255;
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, l = (max + min) / 2;
+  r /= 255;
+  g /= 255;
+  b /= 255;
 
-  if(max == min){
+  var
+    max = Math.max(r, g, b), min = Math.min(r, g, b),
+    h, s, l = (max + min) / 2;
+
+  if (max === min) {
     h = s = 0; // achromatic
   } else {
     var d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
     switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+    case g: h = (b - r) / d + 2; break;
+    case b: h = (r - g) / d + 4; break;
     }
+
     h /= 6;
 
     //CARLOS
@@ -278,10 +284,10 @@ colz.rgbToHsl = function (){
 * @return  Array           The RGB representation
 */
 
-colz.hslToRgb = function (){
+colz.hslToRgb = function () {
   var r, g, b, h, s, l;
 
-  if (typeof arguments[0] == 'number') {
+  if (typeof arguments[0] === 'number') {
     h = arguments[0] / 360;
     s = arguments[1] / 100;
     l = arguments[2] / 100;
