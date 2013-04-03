@@ -16,7 +16,11 @@
 
 var colz = colz || {};
 
-/* Color constructors */
+/*
+ ==================================
+ Color constructors
+ ==================================
+*/
 
 colz.Rgb = function (col) {
   this.r = col[0];
@@ -60,7 +64,11 @@ colz.Hsla.prototype.toString = function () {
   return 'hsla(' + this.h + ',' + this.s + '%,' + this.l + '%,' + this.a + ')';
 };
 
-/* Main Colz color object */
+/*
+ ==================================
+ Main Colz color object
+ ==================================
+*/
 
 colz.color = function () {
   this.hex = null;
@@ -82,6 +90,7 @@ colz.color = function () {
 
   // Init
   this.init(arguments);
+
 
 }; //colz.color
 
@@ -192,7 +201,11 @@ colz.color.prototype.setAlpha = function (newalpha) {
   this.rgba.a = newalpha;
 };
 
-/* Public Functions */
+/*
+ ==================================
+ Public Methods
+ ==================================
+*/
 
 colz.hexToRgb = function (hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -395,3 +408,53 @@ colz.hsbToHsl = function (h, s, b){
 /* Alias */
 colz.hsvToHsl = colz.hsbToHsl;
 colz.hsvToRgb = colz.hsbToRgb;
+
+/*
+ ==================================
+ Color schemes
+ ==================================
+*/
+
+colz.Schemes = function () {
+
+}
+
+colz.hueAngleVariants = function (color_value, angle_array) {
+  var palette = [];
+
+  var initColor = new colz.color(color_value);
+  palette.push(initColor);
+
+  for (var i in angle_array) {
+    initColor.setHue((initColor.h + angle_array[i]) % 360);
+    palette.push(initColor);
+  }
+
+  return palette;
+
+}
+
+colz.Compl = function (color_value) {
+  this.palette = [];
+
+  // Add initial color
+  var initColor = new colz.color(color_value);
+  this.palette.push(initColor);
+
+  // Add complementary
+  initColor.setHue((initColor.h + 180) % 360);
+  this.palette.push(initColor);
+}
+
+colz.Triad = function (color_value) {
+  this.palette = [];
+
+  // Add initial color
+  var initColor = new colz.color(color_value);
+  this.palette.push(initColor);
+
+  // Add complementary
+  var newHue = (initColor.h + 180) % 360;
+  initColor.setHue(newHue);
+  this.palette.push(initColor);
+}
