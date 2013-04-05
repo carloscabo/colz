@@ -98,10 +98,8 @@ colz.color.prototype.init = function (arg) {
 
   // Argument is string -> Hex color
   if (typeof arg[0] === 'string') {
-
     // Add initial '#' if missing
     if (arg[0][0] !== '#') { arg[0] = '#' + arg[0]; }
-
     // If Hex in #fff format convert to #ffffff
     if (arg[0].length < 7) {
       arg[0] = '#' + arg[0][1] + arg[0][1] + arg[0][2] + arg[0][2] + arg[0][3] + arg[0][3];
@@ -178,6 +176,12 @@ colz.color.prototype.setLum = function (newlum) {
   this.updateFromHsl();
 }; // setLum
 
+colz.color.prototype.setAlpha = function (newalpha) {
+  this.a = newalpha;
+  this.hsla.a = newalpha;
+  this.rgba.a = newalpha;
+};
+
 colz.color.prototype.updateFromHsl = function () {
   // Updates Rgb
   this.rgb = null;
@@ -193,12 +197,6 @@ colz.color.prototype.updateFromHsl = function () {
   // Updates Hex
   this.hex = null;
   this.hex = colz.rgbToHex([this.r, this.g, this.b]);
-};
-
-colz.color.prototype.setAlpha = function (newalpha) {
-  this.a = newalpha;
-  this.hsla.a = newalpha;
-  this.rgba.a = newalpha;
 };
 
 /*
@@ -415,46 +413,31 @@ colz.hsvToRgb = colz.hsbToRgb;
  ==================================
 */
 
-colz.Schemes = function () {
+colz.ColorScheme = function (color_value, angle_array) {
+  this.palette = [];
 
+  // Initilize
+  this.init(color_value, angle_array)
 }
 
-colz.hueAngleVariants = function (color_value, angle_array) {
-  var palette = [];
+colz.ColorScheme.prototype.init = function (color_value, angle_array) {
 
-  var initColor = new colz.color(color_value);
-  palette.push(initColor);
+  this.palette.push(new colz.color(color_value))
 
   for (var i in angle_array) {
-    initColor.setHue((initColor.h + angle_array[i]) % 360);
-    palette.push(initColor);
+    var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
+    this.palette.push(new colz.color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
   }
 
-  return palette;
+  return this.palette;
+} //hueAngleVariants
 
+/* Complementary colors */
+colz.ColorScheme.Comp = function (color_value) {
+  return new colz.ColorScheme(color_value, [180]);
 }
 
-colz.Compl = function (color_value) {
-  this.palette = [];
-
-  // Add initial color
-  var initColor = new colz.color(color_value);
-  this.palette.push(initColor);
-
-  // Add complementary
-  initColor.setHue((initColor.h + 180) % 360);
-  this.palette.push(initColor);
-}
-
-colz.Triad = function (color_value) {
-  this.palette = [];
-
-  // Add initial color
-  var initColor = new colz.color(color_value);
-  this.palette.push(initColor);
-
-  // Add complementary
-  var newHue = (initColor.h + 180) % 360;
-  initColor.setHue(newHue);
-  this.palette.push(initColor);
+/* Triad */
+colz.ColorScheme.Triad = function (color_value) {
+  return new colz.ColorScheme(color_value, [120,120]);
 }
