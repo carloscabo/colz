@@ -221,15 +221,18 @@ colz.componentToHex = function (c) {
 
 // You can pass 3 numeric values or 1 Array
 colz.rgbToHex = function () { //r, g, b
-  var r, g, b;
-  if (arguments.length > 1) {
-    r = arguments[0];
-    g = arguments[1];
-    b = arguments[2];
+  var arg, r, g, b;
+
+  arg = arguments;
+
+  if (arg.length > 1) {
+    r = arg[0];
+    g = arg[1];
+    b = arg[2];
   } else {
-    r = arguments[0][0];
-    g = arguments[0][1];
-    b = arguments[0][2];
+    r = arg[0][0];
+    g = arg[0][1];
+    b = arg[0][2];
   }
   return "#" + colz.componentToHex(r) + colz.componentToHex(g) + colz.componentToHex(b);
 };
@@ -244,30 +247,32 @@ colz.rgbToHex = function () { //r, g, b
 * @return  Array           The HSL representation
 */
 colz.rgbToHsl = function () {
-  var r, g, b;
+  var arg, r, g, b, h, s, l, d, max, min;
 
-  if (typeof arguments[0] === 'number') {
-    r = arguments[0];
-    g = arguments[1];
-    b = arguments[2];
+  arg = arguments;
+
+  if (typeof arg[0] === 'number') {
+    r = arg[0];
+    g = arg[1];
+    b = arg[2];
   } else {
-    r = arguments[0][0];
-    g = arguments[0][1];
-    b = arguments[0][2];
+    r = arg[0][0];
+    g = arg[0][1];
+    b = arg[0][2];
   }
 
   r /= 255;
   g /= 255;
   b /= 255;
 
-  var
-    max = Math.max(r, g, b), min = Math.min(r, g, b),
-    h, s, l = (max + min) / 2;
+  max = Math.max(r, g, b);
+  min = Math.min(r, g, b);
+  l = (max + min) / 2;
 
   if (max === min) {
     h = s = 0; // achromatic
   } else {
-    var d = max - min;
+    d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
     switch (max) {
@@ -296,35 +301,39 @@ colz.rgbToHsl = function () {
 * @return  Array           The RGB representation
 */
 
-colz.hslToRgb = function () {
-  var r, g, b, h, s, l;
+colz.hue2rgb = function (p, q, t) {
+  if (t < 0) { t += 1; }
+  if (t > 1) { t -= 1; }
+  if (t < 1 / 6) { return p + (q - p) * 6 * t; }
+  if (t < 1 / 2) { return q; }
+  if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
+  return p;
+};
 
-  if (typeof arguments[0] === 'number') {
-    h = arguments[0] / 360;
-    s = arguments[1] / 100;
-    l = arguments[2] / 100;
+colz.hslToRgb = function () {
+  var arg, r, g, b, h, s, l, q, p;
+
+  arg = arguments;
+
+  if (typeof arg[0] === 'number') {
+    h = arg[0] / 360;
+    s = arg[1] / 100;
+    l = arg[2] / 100;
   } else {
-    h = arguments[0][0] / 360;
-    s = arguments[0][1] / 100;
-    l = arguments[0][2] / 100;
+    h = arg[0][0] / 360;
+    s = arg[0][1] / 100;
+    l = arg[0][2] / 100;
   }
 
-  if (s == 0) {
+  if (s === 0) {
     r = g = b = l; // achromatic
   } else {
-    function hue2rgb(p, q, t){
-      if(t < 0) t += 1;
-      if(t > 1) t -= 1;
-      if(t < 1/6) return p + (q - p) * 6 * t;
-      if(t < 1/2) return q;
-      if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-      return p;
-    }
-    var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    var p = 2 * l - q;
-    r = hue2rgb(p, q, h + 1/3);
-    g = hue2rgb(p, q, h);
-    b = hue2rgb(p, q, h - 1/3);
+
+    q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    p = 2 * l - q;
+    r = colz.hue2rgb(p, q, h + 1 / 3);
+    g = colz.hue2rgb(p, q, h);
+    b = colz.hue2rgb(p, q, h - 1 / 3);
   }
   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 };
@@ -339,20 +348,26 @@ colz.hslToRgb = function () {
  * @return  Array           The HSB representation
  */
 colz.rgbToHsb = function (r, g, b) {
-  r = r/255, g = g/255, b = b/255;
-  var max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, v = max;
+  var max, min, h, s, v, d;
 
-  var d = max - min;
-  s = max == 0 ? 0 : d / max;
+  r = r / 255;
+  g = g / 255;
+  b = b / 255;
 
-  if (max == min) {
+  max = Math.max(r, g, b);
+  min = Math.min(r, g, b);
+  v = max;
+
+  d = max - min;
+  s = max === 0 ? 0 : d / max;
+
+  if (max === min) {
     h = 0; // achromatic
   } else {
-    switch(max){
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
+    switch (max) {
+    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+    case g: h = (b - r) / d + 2; break;
+    case b: h = (r - g) / d + 4; break;
     }
     h /= 6;
   }
@@ -373,7 +388,7 @@ colz.hsbToRgb = function (h, s, v) {
   var r, g, b, i, f, p, q, t;
 
   // h = h / 360;
-  if ( s == 0 ) { return [0,0,0]; }
+  if (s === 0) { return [0, 0, 0]; }
 
   s = s / 100;
   v = v / 100;
@@ -385,21 +400,29 @@ colz.hsbToRgb = function (h, s, v) {
   q = v * (1 - (s * f));
   t = v * (1 - (s * (1 - f)));
 
-  if (i == 0) { r = v; g = t; b = p; }
-  else if (i == 1) { r = q; g = v; b = p;}
-  else if (i == 2) { r = p; g = v; b = t;}
-  else if (i == 3) { r = p; g = q; b = v;}
-  else if (i == 4) { r = t; g = p; b = v;}
-  else if (i == 5) { r = v; g = p; b = q;}
-  r = Math.floor(r*255);
-  g = Math.floor(g*255);
-  b = Math.floor(b*255);
+  if (i === 0) {
+    r = v; g = t; b = p;
+  } else if (i === 1) {
+    r = q; g = v; b = p;
+  } else if (i === 2) {
+    r = p; g = v; b = t;
+  } else if (i === 3) {
+    r = p; g = q; b = v;
+  } else if (i === 4) {
+    r = t; g = p; b = v;
+  } else if (i === 5) {
+    r = v; g = p; b = q;
+  }
+
+  r = Math.floor(r * 255);
+  g = Math.floor(g * 255);
+  b = Math.floor(b * 255);
 
   return [r, g, b];
-}
+};
 
 /* Convert from Hsv */
-colz.hsbToHsl = function (h, s, b){
+colz.hsbToHsl = function (h, s, b) {
   return colz.rgbToHsl(colz.hsbToRgb(h, s, b));
 };
 
@@ -417,12 +440,12 @@ colz.ColorScheme = function (color_value, angle_array) {
   this.palette = [];
 
   // Initilize
-  this.createFromAngles(color_value, angle_array)
-}
+  this.createFromAngles(color_value, angle_array);
+};
 
 colz.ColorScheme.prototype.createFromAngles = function (color_value, angle_array) {
 
-  this.palette.push(new colz.color(color_value))
+  this.palette.push(new colz.color(color_value));
 
   for (var i in angle_array) {
     var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
