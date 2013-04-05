@@ -409,7 +409,7 @@ colz.hsvToRgb = colz.hsbToRgb;
 
 /*
  ==================================
- Color schemes
+ Color Scheme Builder
  ==================================
 */
 
@@ -417,10 +417,10 @@ colz.ColorScheme = function (color_value, angle_array) {
   this.palette = [];
 
   // Initilize
-  this.init(color_value, angle_array)
+  this.createFromAngles(color_value, angle_array)
 }
 
-colz.ColorScheme.prototype.init = function (color_value, angle_array) {
+colz.ColorScheme.prototype.createFromAngles = function (color_value, angle_array) {
 
   this.palette.push(new colz.color(color_value))
 
@@ -430,14 +430,29 @@ colz.ColorScheme.prototype.init = function (color_value, angle_array) {
   }
 
   return this.palette;
-} //hueAngleVariants
+} // createFromAngles
 
 /* Complementary colors */
-colz.ColorScheme.Comp = function (color_value) {
+colz.ColorScheme.Compl = function (color_value) {
   return new colz.ColorScheme(color_value, [180]);
 }
 
 /* Triad */
 colz.ColorScheme.Triad = function (color_value) {
-  return new colz.ColorScheme(color_value, [120,120]);
+  return new colz.ColorScheme(color_value, [150,210]);
+}
+
+/* Tretrad */
+colz.ColorScheme.Tetrad = function (color_value) {
+  return new colz.ColorScheme(color_value, [30,180,210]);
+}
+
+/* Analogous */
+colz.ColorScheme.Analog = function (color_value) {
+  return new colz.ColorScheme(color_value, [-30,30]);
+}
+
+/* Accented Analogous */
+colz.ColorScheme.Accent = function (color_value) {
+  return new colz.ColorScheme(color_value, [30,180,-30]);
 }

@@ -3,6 +3,8 @@ colz
 
 Colz. Javascript library to convert colors between RGB / Hex / HSL / HSV / HSB color spaces. It provides several toString helpers to ease its use in CSS / HTML5 Canvas projects.
 
+Also provides some helpers to create "color schemes" or "color palettes".
+
 Usage
 =====
 
@@ -21,10 +23,10 @@ You can create a color initializing the object with an Hex, or an RGB / RGBa val
 Once initialized you can get the color in several formats accesing the object's properties.
 
     color1.hex  // #f26c4f
-    color1.rgb  // {0: 242, 1: 108, 2: 79}
-    color1.rgba // {0: 242, 1: 108, 2: 79, 3: 1}
-    color1.hsl  // {0: 11, 1: 86, 2: 63}
-    color1.hsla // {0: 11, 1: 86, 2: 63, 3: 1}
+    color1.rgb  // {r: 242, g: 108, b: 79}
+    color1.rgba // {r: 242, g: 108, b: 79, a: 1}
+    color1.hsl  // {h: 11, s: 86, l: 63}
+    color1.hsla // {h: 11, s: 86, l: 63, a: 1}
     
     // Also its individual componets
     
@@ -52,4 +54,7 @@ And two public methods to convert HSB Colors (the color-space used in Adobe appl
     colz.hsbToRgb(204, 100, 74); // [249, 132, 14]
     colz.hsbToHsl(204, 100, 74); // [204, 100, 37]
 
+Color Schemes / Paletes
+=======================
 
+Under construction.
