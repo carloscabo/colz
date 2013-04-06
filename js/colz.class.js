@@ -70,7 +70,7 @@ colz.Hsla.prototype.toString = function () {
  ==================================
 */
 
-colz.color = function () {
+colz.Color = function () {
   this.hex = null;
   this.r = null;
   this.g = null;
@@ -94,7 +94,7 @@ colz.color = function () {
 
 }; //colz.color
 
-colz.color.prototype.init = function (arg) {
+colz.Color.prototype.init = function (arg) {
 
   // Argument is string -> Hex color
   if (typeof arg[0] === 'string') {
@@ -155,34 +155,34 @@ colz.color.prototype.init = function (arg) {
   this.hsla = new colz.Hsla([this.h, this.s, this.l, this.a]);
 }; // init
 
-colz.color.prototype.setHue = function (newhue) {
+colz.Color.prototype.setHue = function (newhue) {
   this.h = newhue;
   this.hsl.h = newhue;
   this.hsla.h = newhue;
   this.updateFromHsl();
 }; // setHue
 
-colz.color.prototype.setSat = function (newsat) {
+colz.Color.prototype.setSat = function (newsat) {
   this.s = newsat;
   this.hsl.s = newsat;
   this.hsla.s = newsat;
   this.updateFromHsl();
 }; // setSat
 
-colz.color.prototype.setLum = function (newlum) {
+colz.Color.prototype.setLum = function (newlum) {
   this.l = newlum;
   this.hsl.l = newlum;
   this.hsla.l = newlum;
   this.updateFromHsl();
 }; // setLum
 
-colz.color.prototype.setAlpha = function (newalpha) {
+colz.Color.prototype.setAlpha = function (newalpha) {
   this.a = newalpha;
   this.hsla.a = newalpha;
   this.rgba.a = newalpha;
 };
 
-colz.color.prototype.updateFromHsl = function () {
+colz.Color.prototype.updateFromHsl = function () {
   // Updates Rgb
   this.rgb = null;
   this.rgb = new colz.Rgb(colz.hslToRgb([this.h, this.s, this.l]));
@@ -438,10 +438,24 @@ colz.hsvToRgb = colz.hsbToRgb;
 
 colz.ColorScheme = function (color_value, angle_array) {
   this.palette = [];
-
-  // Initilize
-  this.createFromAngles(color_value, angle_array);
+  console
+  if (angle_array === 'undefined' && color_value instanceof Array) {
+    // Asume you passing a color array ['#f00','#0f0'...]
+    this.createFromColors(color_value);
+  } else {
+    // Create scheme from color + hue angles
+    this.createFromAngles(color_value, angle_array);
+  }
 };
+
+colz.ColorScheme.prototype.createFromColors = function (color_value) {
+  for (var i in color_value) {
+    console.log(color_value[i]);
+    this.palette.push(new colz.color(color_value[i]));
+  }
+
+  return this.palette;
+} // createFromAngles
 
 colz.ColorScheme.prototype.createFromAngles = function (color_value, angle_array) {
 

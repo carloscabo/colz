@@ -10,14 +10,14 @@ Usage
 
 You can create a color initializing the object with an Hex, or an RGB / RGBa value this way:
 
-    color1 = new colz.color('#f26c4f');
-    color2 = new colz.color('#f00'); // Short Hex
-    color3 = new colz.color(0, 114, 188); // Rgb
-    color4 = new colz.color(0, 114, 188, 0.1); // Rgba
+    color1 = new colz.Color('#f26c4f');
+    color2 = new colz.Color('#f00'); // Short Hex
+    color3 = new colz.Color(0, 114, 188); // Rgb
+    color4 = new colz.Color(0, 114, 188, 0.1); // Rgba
 
     // You can pass Rgb in array format too
-    color5 = new colz.color([0, 114, 188]); // Rgb
-    color6 = new colz.color([0, 114, 188, 0.1]); // Rgba
+    color5 = new colz.Color([0, 114, 188]); // Rgb
+    color6 = new colz.Color([0, 114, 188, 0.1]); // Rgba
     
 
 Once initialized you can get the color in several formats accesing the object's properties.

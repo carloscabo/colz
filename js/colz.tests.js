@@ -4,7 +4,7 @@ $(document).ready(function() {
   // la magia aquí
 
   // Hex color
-  c1 = new colz.color('#f26c4f');
+  c1 = new colz.Color('#f26c4f');
 
   test( "Hex Color to other color-spaces", function() {
 
@@ -52,7 +52,7 @@ $(document).ready(function() {
   test( "Creating color from RGBa", function() {
 
     // RGBA color
-    c1 = new colz.color(0, 114, 188, 0.35);
+    c1 = new colz.Color(0, 114, 188, 0.35);
 
     equal( c1.rgb.toString() , "rgb(0,114,188)" );
     equal( c1.rgba.toString() ,"rgba(0,114,188,0.35)" );
@@ -89,7 +89,7 @@ $(document).ready(function() {
   test( "Creating RGB color", function() {
 
     // RGB color
-    c1 = new colz.color(242, 108, 79);
+    c1 = new colz.Color(242, 108, 79);
 
     equal( c1.rgb.toString() , "rgb(242,108,79)" );
     equal( c1.rgba.toString() ,"rgba(242,108,79,1)" );
@@ -116,7 +116,7 @@ $(document).ready(function() {
   test( "Creating shot Hex color ('#fff')", function() {
 
     // Hex short format
-    c1 = new colz.color('F00');
+    c1 = new colz.Color('F00');
     equal( c1.rgb.toString() , "rgb(255,0,0)" );
     equal( c1.rgba.toString() ,"rgba(255,0,0,1)" );
 
