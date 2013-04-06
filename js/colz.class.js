@@ -436,60 +436,58 @@ colz.hsvToRgb = colz.hsbToRgb;
  ==================================
 */
 
-colz.ColorScheme = function (color_value, angle_array) {
+colz.ColorScheme = function (color_val, angle_array) {
   this.palette = [];
-  console
-  if (angle_array === 'undefined' && color_value instanceof Array) {
+
+  if (angle_array === undefined && color_val instanceof Array) {
     // Asume you passing a color array ['#f00','#0f0'...]
-    this.createFromColors(color_value);
+    this.createFromColors(color_val);
   } else {
     // Create scheme from color + hue angles
-    this.createFromAngles(color_value, angle_array);
+    this.createFromAngles(color_val, angle_array);
   }
 };
 
-colz.ColorScheme.prototype.createFromColors = function (color_value) {
-  for (var i in color_value) {
-    console.log(color_value[i]);
-    this.palette.push(new colz.color(color_value[i]));
+colz.ColorScheme.prototype.createFromColors = function (color_val) {
+  for (var i in color_val) {
+    //console.log(color_val[i]);
+    this.palette.push(new colz.Color(color_val[i]));
   }
-
   return this.palette;
-} // createFromAngles
+} // createFromColors
 
-colz.ColorScheme.prototype.createFromAngles = function (color_value, angle_array) {
+colz.ColorScheme.prototype.createFromAngles = function (color_val, angle_array) {
 
-  this.palette.push(new colz.color(color_value));
+  this.palette.push(new colz.Color(color_val));
 
   for (var i in angle_array) {
     var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
-    this.palette.push(new colz.color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
+    this.palette.push(new colz.Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
   }
-
   return this.palette;
 } // createFromAngles
 
-/* Complementary colors */
-colz.ColorScheme.Compl = function (color_value) {
-  return new colz.ColorScheme(color_value, [180]);
+/* Complementary colors constructors */
+colz.ColorScheme.Compl = function (color_val) {
+  return new colz.ColorScheme(color_val, [180]);
 }
 
 /* Triad */
-colz.ColorScheme.Triad = function (color_value) {
-  return new colz.ColorScheme(color_value, [150,210]);
+colz.ColorScheme.Triad = function (color_val) {
+  return new colz.ColorScheme(color_val, [150,210]);
 }
 
 /* Tretrad */
-colz.ColorScheme.Tetrad = function (color_value) {
-  return new colz.ColorScheme(color_value, [30,180,210]);
+colz.ColorScheme.Tetrad = function (color_val) {
+  return new colz.ColorScheme(color_val, [30,180,210]);
 }
 
 /* Analogous */
-colz.ColorScheme.Analog = function (color_value) {
-  return new colz.ColorScheme(color_value, [-30,30]);
+colz.ColorScheme.Analog = function (color_val) {
+  return new colz.ColorScheme(color_val, [-30,30]);
 }
 
 /* Accented Analogous */
-colz.ColorScheme.Accent = function (color_value) {
-  return new colz.ColorScheme(color_value, [30,180,-30]);
+colz.ColorScheme.Accent = function (color_val) {
+  return new colz.ColorScheme(color_val, [30,180,-30]);
 }
