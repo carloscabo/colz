@@ -205,6 +205,11 @@ colz.Color.prototype.updateFromHsl = function () {
  ==================================
 */
 
+colz.randomColor = function () {
+  var r = "#" + Math.random().toString(16).slice(2, 8);
+  return new colz.Color(r);
+}
+
 colz.hexToRgb = function (hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? [
@@ -474,20 +479,25 @@ colz.ColorScheme.Compl = function (color_val) {
 
 /* Triad */
 colz.ColorScheme.Triad = function (color_val) {
-  return new colz.ColorScheme(color_val, [150,210]);
+  return new colz.ColorScheme(color_val, [120,240]);
 }
 
 /* Tretrad */
 colz.ColorScheme.Tetrad = function (color_val) {
-  return new colz.ColorScheme(color_val, [30,180,210]);
+  return new colz.ColorScheme(color_val, [60,180,240]);
 }
 
 /* Analogous */
 colz.ColorScheme.Analog = function (color_val) {
-  return new colz.ColorScheme(color_val, [-30,30]);
+  return new colz.ColorScheme(color_val, [-45,45]);
+}
+
+/* Split complementary */
+colz.ColorScheme.Split = function (color_val) {
+  return new colz.ColorScheme(color_val, [150,210]);
 }
 
 /* Accented Analogous */
 colz.ColorScheme.Accent = function (color_val) {
-  return new colz.ColorScheme(color_val, [30,180,-30]);
+  return new colz.ColorScheme(color_val, [-45,45,180]);
 }

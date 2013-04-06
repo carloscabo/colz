@@ -42,6 +42,11 @@ Provides four private methods to update your color HSLa settings that automatica
     color1.setSat(35);     // Update Saturation
     color1.setAlpha(0.88); // Update alpha
     
+
+You can get a random color using
+
+    c1 = colz.randomColor(); // Return colz.Color object
+
 Any of the colorspaces have an "toString" method to ease its usage in CSS / HTML5 Canvas projects.
 
     color1.rgb.toString();  // "rgb(0,114,188)"
@@ -57,4 +62,45 @@ And two public methods to convert HSB Colors (the color-space used in Adobe appl
 Color Schemes / Paletes
 =======================
 
-Under construction.
+Color Schemes are colz.Color collections so you can handle all the colors you are using in a project in a single object, easier to iterate and to work with. Think about it as a a 'palette' where you store all your colors.
+
+To create a custom color scheme / palette is as simple as passing an array of colors to the constructor:
+
+    myColors = new colz.ColorScheme(['#ffff0','#fb0102']);
+    
+    // You can also pass RGB color arrays
+    myColors = new colz.ColorScheme([[255, 01, 03], [254, 12, 23]]);
+    
+    // Access your palette with myColors.palette[i]
+    
+Another way is to pass a single color and an array of HUE shifts. So if you want to get 2 aditional colors with their HUEs "rotated" 120º (usually called "Triad Complementary colors") you can do it this way:
+
+    // Creating a "triad"
+    myPalette = new colz.ColorScheme('#f00', [120, 240]);
+    
+To ease the generation of complementary colors ColorScheme provides some "shortcut" constructors.
+
+    // Complementary color (HUE + 180º)
+    myColors = new colz.ColorScheme.Compl(base_color));
+    
+    // Triad (HUE + 120º, HUE + 240º)
+    myColors = new colz.ColorScheme.Triad(base_color));
+    
+    // Tetrad / quad (HUE +60º, +180º, +240º)
+    myColors = new colz.ColorScheme.Tetrad(base_color));
+    
+    // Analogous (-45º, +45º)
+    myColors = new colz.ColorScheme.Analog(base_color));
+    
+    // Accent analogous (-45º, +45, +180º)
+    myColors = new colz.ColorScheme.Accent(base_color));
+    
+    // Split complementary (+150º, +210º)
+    myColors = new colz.ColorScheme.Split(base_color));
+    
+    // Custom degrees
+    myColors = new colz.ColorScheme(base_color, [50,60,80]));
+    
+Take a look to the colz.test.js to see some working samples.
+
+

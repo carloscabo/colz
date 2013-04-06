@@ -130,4 +130,31 @@ $(document).ready(function() {
     // equal( "1", "2" );
   });
 
+  // Color schemes visual samples
+  var sch = [];
+  var tcol = '#F43E71';
+  sch.push(new colz.ColorScheme.Compl(tcol));
+  sch.push(new colz.ColorScheme.Triad(tcol));
+  sch.push(new colz.ColorScheme.Tetrad(tcol));
+  sch.push(new colz.ColorScheme.Analog(tcol));
+  sch.push(new colz.ColorScheme.Accent(tcol));
+  sch.push(new colz.ColorScheme.Split(tcol));
+  sch.push(new colz.ColorScheme(tcol, [50,60,80]));
+
+  // Loop color schemes
+  for (i = 0, lensc = sch.length; i < lensc; i++) {
+
+    var html = '<div class="cs">';
+    for (j = 0, len = sch[i].palette.length; j < len; j++) {
+      html = html + '<div class="swatch" style="background:';
+      html = html + sch[i].palette[j].hex;
+      html = html + '">' + sch[i].palette[j].hex + '</div>';
+    }
+
+    html = html + '</div>';
+    $('#color-schemes').append(html);
+
+  }
+
+
 });
