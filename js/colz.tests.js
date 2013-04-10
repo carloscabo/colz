@@ -126,6 +126,7 @@ $(document).ready(function() {
 
     // Photoshop HSB color
     deepEqual( colz.hsbToRgb(204, 100, 74), [0, 113, 188]);
+    deepEqual( colz.rgbToHsb(0, 113, 188), [204, 100, 74]);
 
     // equal( "1", "2" );
   });

@@ -208,7 +208,7 @@ colz.Color.prototype.updateFromHsl = function () {
 colz.randomColor = function () {
   var r = "#" + Math.random().toString(16).slice(2, 8);
   return new colz.Color(r);
-}
+};
 
 colz.hexToRgb = function (hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -376,6 +376,12 @@ colz.rgbToHsb = function (r, g, b) {
     }
     h /= 6;
   }
+
+  // map top 360,100,100
+  h = Math.round(h * 360);
+  s = Math.round(s * 100);
+  v = Math.round(v * 100);
+
   return [h, s, v];
 };
 
@@ -459,7 +465,7 @@ colz.ColorScheme.prototype.createFromColors = function (color_val) {
     this.palette.push(new colz.Color(color_val[i]));
   }
   return this.palette;
-} // createFromColors
+}; // createFromColors
 
 colz.ColorScheme.prototype.createFromAngles = function (color_val, angle_array) {
 
@@ -470,34 +476,34 @@ colz.ColorScheme.prototype.createFromAngles = function (color_val, angle_array) 
     this.palette.push(new colz.Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
   }
   return this.palette;
-} // createFromAngles
+}; // createFromAngles
 
 /* Complementary colors constructors */
 colz.ColorScheme.Compl = function (color_val) {
   return new colz.ColorScheme(color_val, [180]);
-}
+};
 
 /* Triad */
 colz.ColorScheme.Triad = function (color_val) {
   return new colz.ColorScheme(color_val, [120,240]);
-}
+};
 
 /* Tretrad */
 colz.ColorScheme.Tetrad = function (color_val) {
   return new colz.ColorScheme(color_val, [60,180,240]);
-}
+};
 
 /* Analogous */
 colz.ColorScheme.Analog = function (color_val) {
   return new colz.ColorScheme(color_val, [-45,45]);
-}
+};
 
 /* Split complementary */
 colz.ColorScheme.Split = function (color_val) {
   return new colz.ColorScheme(color_val, [150,210]);
-}
+};
 
 /* Accented Analogous */
 colz.ColorScheme.Accent = function (color_val) {
   return new colz.ColorScheme(color_val, [-45,45,180]);
-}
+};
