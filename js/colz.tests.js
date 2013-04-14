@@ -127,8 +127,14 @@ $(document).ready(function() {
     // Photoshop HSB color
     deepEqual( colz.hsbToRgb(204, 100, 74), [0, 113, 188]);
     deepEqual( colz.rgbToHsb(0, 113, 188), [204, 100, 74]);
+  });
 
-    // equal( "1", "2" );
+  test( "Convert Photoshop HSL <-> RGB", function() {
+
+    // Photoshop HSB color
+    deepEqual(colz.hslToRgb(180, 15, 78), [190, 207, 207]);
+    deepEqual(colz.rgbToHsl(190, 207, 207), [180, 15, 78]);
+    deepEqual(colz.rgbToHsl(18, 18, 18), [0, 0, 7]);
   });
 
   // Color schemes visual samples

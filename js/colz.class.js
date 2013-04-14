@@ -287,12 +287,13 @@ colz.rgbToHsl = function () {
     }
 
     h /= 6;
-
-    //CARLOS
-    h = Math.round(h * 360);
-    s = Math.round(s * 100);
-    l = Math.round(l * 100);
   }
+
+  //CARLOS
+  h = Math.round(h * 360);
+  s = Math.round(s * 100);
+  l = Math.round(l * 100);
+
   return [h, s, l];
 };
 
