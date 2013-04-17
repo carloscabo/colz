@@ -12,499 +12,552 @@
  * Some formulas borrowed from Wikipedia or other authors.
 */
 
-/* Namespace container */
-
-var colz = colz || {};
-
 /*
- ==================================
- Color constructors
- ==================================
+ Universal JavaScript Module, supports AMD (RequireJS), Node.js, and the browser.
+ https://gist.github.com/kirel/1268753
 */
 
-colz.Rgb = function (col) {
-  this.r = col[0];
-  this.g = col[1];
-  this.b = col[2];
-};
+(function (name, definition) {
+  if (typeof define === 'function') { // AMD
+    define(definition);
+  } else if (typeof module !== 'undefined' && module.exports) { // Node.js
+    module.exports = definition();
+  } else { // Browser
+    var theModule = definition(), global = this, old = global[name];
+    theModule.noConflict = function () {
+      global[name] = old;
+      return theModule;
+    };
+    global[name] = theModule;
+  }
+})('colz', function () {
+  /* Namespace container */
 
-colz.Rgb.prototype.toString = function () {
-  return 'rgb(' + this.r + ',' + this.g + ',' + this.b + ')';
-};
+  var
+    round = Math.round,
+    toString = 'toString',
+    colz = colz || {},
+    Rgb,
+    Rgba,
+    Hsl,
+    Hsla,
+    Color,
+    ColorScheme,
+    hexToRgb,
+    componentToHex,
+    rgbToHex,
+    rgbToHsl,
+    hue2rgb,
+    hslToRgb,
+    rgbToHsb,
+    hsbToRgb,
+    hsbToHsl,
+    hsvToHsl,
+    hsvToRgb,
+    randomColor
+    ;
 
-colz.Rgba = function (col) {
-  this.r = col[0];
-  this.g = col[1];
-  this.b = col[2];
-  this.a = col[3];
-};
+  /*
+   ==================================
+   Color constructors
+   ==================================
+  */
 
-colz.Rgba.prototype.toString = function () {
-  return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a + ')';
-};
+  Rgb = colz.Rgb = function (col) {
+    this.r = col[0];
+    this.g = col[1];
+    this.b = col[2];
+  };
 
-colz.Hsl = function (col) {
-  this.h = col[0];
-  this.s = col[1];
-  this.l = col[2];
-};
+  Rgb.prototype[toString] = function () {
+    return 'rgb(' + this.r + ',' + this.g + ',' + this.b + ')';
+  };
 
-colz.Hsl.prototype.toString = function () {
-  return 'hsl(' + this.h + ',' + this.s + '%,' + this.l + '%)';
-};
+  Rgba = colz.Rgba = function (col) {
+    this.r = col[0];
+    this.g = col[1];
+    this.b = col[2];
+    this.a = col[3];
+  };
 
-colz.Hsla = function (col) {
-  this.h = col[0];
-  this.s = col[1];
-  this.l = col[2];
-  this.a = col[3];
-};
+  Rgba.prototype[toString] = function () {
+    return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a + ')';
+  };
 
-colz.Hsla.prototype.toString = function () {
-  return 'hsla(' + this.h + ',' + this.s + '%,' + this.l + '%,' + this.a + ')';
-};
+  Hsl = colz.Hsl = function (col) {
+    this.h = col[0];
+    this.s = col[1];
+    this.l = col[2];
+  };
 
-/*
- ==================================
- Main Colz color object
- ==================================
-*/
+  Hsl.prototype[toString] = function () {
+    return 'hsl(' + this.h + ',' + this.s + '%,' + this.l + '%)';
+  };
 
-colz.Color = function () {
-  this.hex = null;
-  this.r = null;
-  this.g = null;
-  this.b = null;
-  this.h = null;
-  this.s = null;
-  this.l = null;
-  this.a = null;
-  this.hsl = null;
-  this.hsla = null;
-  this.rgb = null;
-  this.rgba = null;
-  /*this.hslString = null;
-  this.hslaString = null;
-  this.rgbString = null;
-  this.rgbaString = null;*/
+  Hsla = colz.Hsla = function (col) {
+    this.h = col[0];
+    this.s = col[1];
+    this.l = col[2];
+    this.a = col[3];
+  };
 
-  // Init
-  this.init(arguments);
+  Hsla.prototype[toString] = function () {
+    return 'hsla(' + this.h + ',' + this.s + '%,' + this.l + '%,' + this.a + ')';
+  };
 
+  /*
+   ==================================
+   Main Colz color object
+   ==================================
+  */
 
-}; //colz.color
+  Color = colz.Color = function () {
+    this.hex =
+    this.r =
+    this.g =
+    this.b =
+    this.h =
+    this.s =
+    this.l =
+    this.a =
+    this.hsl =
+    this.hsla =
+    this.rgb =
+    this.rgba = null;
+    /*this.hslString = null;
+    this.hslaString = null;
+    this.rgbString = null;
+    this.rgbaString = null;*/
 
-colz.Color.prototype.init = function (arg) {
+    // Init
+    this.init(arguments);
+  }; //colz.color
 
-  // Argument is string -> Hex color
-  if (typeof arg[0] === 'string') {
-    // Add initial '#' if missing
-    if (arg[0][0] !== '#') { arg[0] = '#' + arg[0]; }
-    // If Hex in #fff format convert to #ffffff
-    if (arg[0].length < 7) {
-      arg[0] = '#' + arg[0][1] + arg[0][1] + arg[0][2] + arg[0][2] + arg[0][3] + arg[0][3];
+  var colorPrototype = Color.prototype;
+
+  colorPrototype.init = function (arg) {
+    var _this = this;
+
+    // Argument is string -> Hex color
+    if (typeof arg[0] === 'string') {
+      // Add initial '#' if missing
+      if (arg[0][0] !== '#') { arg[0] = '#' + arg[0]; }
+      // If Hex in #fff format convert to #ffffff
+      if (arg[0].length < 7) {
+        arg[0] = '#' + arg[0][1] + arg[0][1] + arg[0][2] + arg[0][2] + arg[0][3] + arg[0][3];
+      }
+
+      _this.hex = arg[0].toLowerCase();
+
+      _this.rgb = new Rgb(hexToRgb(_this.hex));
+      _this.r = _this.rgb.r;
+      _this.g = _this.rgb.g;
+      _this.b = _this.rgb.b;
+      _this.a = 1.0;
+      _this.rgba = new Rgba([_this.r, _this.g, _this.b, _this.a]);
     }
 
-    this.hex = arg[0].toLowerCase();
+    // First argument is number -> Rgb[A]
+    if (typeof arg[0] === 'number') {
+      _this.r = arg[0];
+      _this.g = arg[1];
+      _this.b = arg[2];
+      if (typeof arg[3] === 'undefined') {
+        _this.a = 1.0;
+      } else {
+        _this.a = arg[3];
+      }
 
-    this.rgb = new colz.Rgb(colz.hexToRgb(this.hex));
+      _this.rgb  = new Rgb([_this.r, _this.g, _this.b]);
+      _this.rgba = new Rgba([_this.r, _this.g, _this.b, _this.a]);
+      _this.hex = rgbToHex([_this.r, _this.g, _this.b]);
+    }
+
+    // Argument is Array -> Rgb[A]
+    if (arg[0] instanceof Array) {
+      _this.r = arg[0][0];
+      _this.g = arg[0][1];
+      _this.b = arg[0][2];
+      if (typeof arg[0][3] === 'undefined') {
+        _this.a = 1.0;
+      } else {
+        _this.a = arg[0][3];
+      }
+
+      _this.rgb  = new Rgb([_this.r, _this.g, _this.b]);
+      _this.rgba = new Rgba([_this.r, _this.g, _this.b, _this.a]);
+      _this.hex = rgbToHex([_this.r, _this.g, _this.b]);
+    }
+
+    // Common
+    _this.hsl = new Hsl(colz.rgbToHsl([_this.r, _this.g, _this.b]));
+    _this.h = _this.hsl.h;
+    _this.s = _this.hsl.s;
+    _this.l = _this.hsl.l;
+    _this.hsla = new Hsla([_this.h, _this.s, _this.l, _this.a]);
+  }; // init
+
+  colorPrototype.setHue = function (newhue) {
+    var _this = this;
+
+    _this.h = newhue;
+    _this.hsl.h = newhue;
+    _this.hsla.h = newhue;
+    _this.updateFromHsl();
+  }; // setHue
+
+  colorPrototype.setSat = function (newsat) {
+    var _this = this;
+
+    _this.s = newsat;
+    _this.hsl.s = newsat;
+    _this.hsla.s = newsat;
+    _this.updateFromHsl();
+  }; // setSat
+
+  colorPrototype.setLum = function (newlum) {
+    var _this = this;
+
+    _this.l = newlum;
+    _this.hsl.l = newlum;
+    _this.hsla.l = newlum;
+    _this.updateFromHsl();
+  }; // setLum
+
+  colorPrototype.setAlpha = function (newalpha) {
+    this.a = newalpha;
+    this.hsla.a = newalpha;
+    this.rgba.a = newalpha;
+  };
+
+  colorPrototype.updateFromHsl = function () {
+    // Updates Rgb
+    this.rgb = null;
+    this.rgb = new Rgb(colz.hslToRgb([this.h, this.s, this.l]));
+
     this.r = this.rgb.r;
     this.g = this.rgb.g;
     this.b = this.rgb.b;
-    this.a = 1.0;
-    this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
-  }
+    this.rgba.r = this.rgb.r;
+    this.rgba.g = this.rgb.g;
+    this.rgba.b = this.rgb.b;
 
-  // First argument is number -> Rgb[A]
-  if (typeof arg[0] === 'number') {
-    this.r = arg[0];
-    this.g = arg[1];
-    this.b = arg[2];
-    if (typeof arg[3] === 'undefined') {
-      this.a = 1.0;
+    // Updates Hex
+    this.hex = null;
+    this.hex = rgbToHex([this.r, this.g, this.b]);
+  };
+
+  /*
+   ==================================
+   Public Methods
+   ==================================
+  */
+
+  randomColor = colz.randomColor = function () {
+    var r = "#" + Math.random().toString(16).slice(2, 8);
+    return new Color(r);
+  };
+
+  hexToRgb = colz.hexToRgb = function (hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : null;
+  };
+
+  componentToHex = colz.componentToHex = function (c) {
+    var hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+
+  // You can pass 3 numeric values or 1 Array
+  rgbToHex = colz.rgbToHex = function () { //r, g, b
+    var arg, r, g, b;
+
+    arg = arguments;
+
+    if (arg.length > 1) {
+      r = arg[0];
+      g = arg[1];
+      b = arg[2];
     } else {
-      this.a = arg[3];
+      r = arg[0][0];
+      g = arg[0][1];
+      b = arg[0][2];
+    }
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+  };
+
+  /**
+  * Converts an RGB color value to HSL. Conversion formula
+  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+  *
+  * @param   Number  r       The red color value
+  * @param   Number  g       The green color value
+  * @param   Number  b       The blue color value
+  * @return  Array           The HSL representation
+  */
+  rgbToHsl = colz.rgbToHsl = function () {
+    var arg, r, g, b, h, s, l, d, max, min;
+
+    arg = arguments;
+
+    if (typeof arg[0] === 'number') {
+      r = arg[0];
+      g = arg[1];
+      b = arg[2];
+    } else {
+      r = arg[0][0];
+      g = arg[0][1];
+      b = arg[0][2];
     }
 
-    this.rgb  = new colz.Rgb([this.r, this.g, this.b]);
-    this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
-    this.hex = colz.rgbToHex([this.r, this.g, this.b]);
-  }
+    r /= 255;
+    g /= 255;
+    b /= 255;
 
-  // Argument is Array -> Rgb[A]
-  if (arg[0] instanceof Array) {
-    this.r = arg[0][0];
-    this.g = arg[0][1];
-    this.b = arg[0][2];
-    if (typeof arg[0][3] === 'undefined') {
-      this.a = 1.0;
+    max = Math.max(r, g, b);
+    min = Math.min(r, g, b);
+    l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0; // achromatic
     } else {
-      this.a = arg[0][3];
+      d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+      switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+      }
+
+      h /= 6;
     }
 
-    this.rgb  = new colz.Rgb([this.r, this.g, this.b]);
-    this.rgba = new colz.Rgba([this.r, this.g, this.b, this.a]);
-    this.hex = colz.rgbToHex([this.r, this.g, this.b]);
-  }
+    //CARLOS
+    h = round(h * 360);
+    s = round(s * 100);
+    l = round(l * 100);
 
-  // Common
-  this.hsl = new colz.Hsl(colz.rgbToHsl([this.r, this.g, this.b]));
-  this.h = this.hsl.h;
-  this.s = this.hsl.s;
-  this.l = this.hsl.l;
-  this.hsla = new colz.Hsla([this.h, this.s, this.l, this.a]);
-}; // init
+    return [h, s, l];
+  };
 
-colz.Color.prototype.setHue = function (newhue) {
-  this.h = newhue;
-  this.hsl.h = newhue;
-  this.hsla.h = newhue;
-  this.updateFromHsl();
-}; // setHue
+  /**
+  * Converts an HSL color value to RGB. Conversion formula
+  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+  *
+  * @param   Number  h       The hue
+  * @param   Number  s       The saturation
+  * @param   Number  l       The lightness
+  * @return  Array           The RGB representation
+  */
 
-colz.Color.prototype.setSat = function (newsat) {
-  this.s = newsat;
-  this.hsl.s = newsat;
-  this.hsla.s = newsat;
-  this.updateFromHsl();
-}; // setSat
+  hue2rgb = colz.hue2rgb = function (p, q, t) {
+    if (t < 0) { t += 1; }
+    if (t > 1) { t -= 1; }
+    if (t < 1 / 6) { return p + (q - p) * 6 * t; }
+    if (t < 1 / 2) { return q; }
+    if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
+    return p;
+  };
 
-colz.Color.prototype.setLum = function (newlum) {
-  this.l = newlum;
-  this.hsl.l = newlum;
-  this.hsla.l = newlum;
-  this.updateFromHsl();
-}; // setLum
+  hslToRgb = colz.hslToRgb = function () {
+    var arg, r, g, b, h, s, l, q, p;
 
-colz.Color.prototype.setAlpha = function (newalpha) {
-  this.a = newalpha;
-  this.hsla.a = newalpha;
-  this.rgba.a = newalpha;
-};
+    arg = arguments;
 
-colz.Color.prototype.updateFromHsl = function () {
-  // Updates Rgb
-  this.rgb = null;
-  this.rgb = new colz.Rgb(colz.hslToRgb([this.h, this.s, this.l]));
+    if (typeof arg[0] === 'number') {
+      h = arg[0] / 360;
+      s = arg[1] / 100;
+      l = arg[2] / 100;
+    } else {
+      h = arg[0][0] / 360;
+      s = arg[0][1] / 100;
+      l = arg[0][2] / 100;
+    }
 
-  this.r = this.rgb.r;
-  this.g = this.rgb.g;
-  this.b = this.rgb.b;
-  this.rgba.r = this.rgb.r;
-  this.rgba.g = this.rgb.g;
-  this.rgba.b = this.rgb.b;
+    if (s === 0) {
+      r = g = b = l; // achromatic
+    } else {
 
-  // Updates Hex
-  this.hex = null;
-  this.hex = colz.rgbToHex([this.r, this.g, this.b]);
-};
+      q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      p = 2 * l - q;
+      r = colz.hue2rgb(p, q, h + 1 / 3);
+      g = colz.hue2rgb(p, q, h);
+      b = colz.hue2rgb(p, q, h - 1 / 3);
+    }
+    return [round(r * 255), round(g * 255), round(b * 255)];
+  };
 
-/*
- ==================================
- Public Methods
- ==================================
-*/
+  /**
+   * Converts an RGB color value to HSB / HSV. Conversion formula
+   * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+   *
+   * @param   Number  r       The red color value
+   * @param   Number  g       The green color value
+   * @param   Number  b       The blue color value
+   * @return  Array           The HSB representation
+   */
+  rgbToHsb = colz.rgbToHsb = function (r, g, b) {
+    var max, min, h, s, v, d;
 
-colz.randomColor = function () {
-  var r = "#" + Math.random().toString(16).slice(2, 8);
-  return new colz.Color(r);
-};
+    r = r / 255;
+    g = g / 255;
+    b = b / 255;
 
-colz.hexToRgb = function (hex) {
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16)
-  ] : null;
-};
+    max = Math.max(r, g, b);
+    min = Math.min(r, g, b);
+    v = max;
 
-colz.componentToHex = function (c) {
-  var hex = c.toString(16);
-  return hex.length === 1 ? "0" + hex : hex;
-};
-
-// You can pass 3 numeric values or 1 Array
-colz.rgbToHex = function () { //r, g, b
-  var arg, r, g, b;
-
-  arg = arguments;
-
-  if (arg.length > 1) {
-    r = arg[0];
-    g = arg[1];
-    b = arg[2];
-  } else {
-    r = arg[0][0];
-    g = arg[0][1];
-    b = arg[0][2];
-  }
-  return "#" + colz.componentToHex(r) + colz.componentToHex(g) + colz.componentToHex(b);
-};
-
-/**
-* Converts an RGB color value to HSL. Conversion formula
-* adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-*
-* @param   Number  r       The red color value
-* @param   Number  g       The green color value
-* @param   Number  b       The blue color value
-* @return  Array           The HSL representation
-*/
-colz.rgbToHsl = function () {
-  var arg, r, g, b, h, s, l, d, max, min;
-
-  arg = arguments;
-
-  if (typeof arg[0] === 'number') {
-    r = arg[0];
-    g = arg[1];
-    b = arg[2];
-  } else {
-    r = arg[0][0];
-    g = arg[0][1];
-    b = arg[0][2];
-  }
-
-  r /= 255;
-  g /= 255;
-  b /= 255;
-
-  max = Math.max(r, g, b);
-  min = Math.min(r, g, b);
-  l = (max + min) / 2;
-
-  if (max === min) {
-    h = s = 0; // achromatic
-  } else {
     d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    s = max === 0 ? 0 : d / max;
 
-    switch (max) {
-    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-    case g: h = (b - r) / d + 2; break;
-    case b: h = (r - g) / d + 4; break;
+    if (max === min) {
+      h = 0; // achromatic
+    } else {
+      switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+      }
+      h /= 6;
     }
 
-    h /= 6;
-  }
+    // map top 360,100,100
+    h = round(h * 360);
+    s = round(s * 100);
+    v = round(v * 100);
 
-  //CARLOS
-  h = Math.round(h * 360);
-  s = Math.round(s * 100);
-  l = Math.round(l * 100);
+    return [h, s, v];
+  };
 
-  return [h, s, l];
-};
+  /**
+  * Converts an HSB / HSV color value to RGB. Conversion formula
+  * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
+  *
+  * @param   Number  h       The hue
+  * @param   Number  s       The saturation
+  * @param   Number  v       The value
+  * @return  Array           The RGB representation
+  */
+  hsbToRgb = colz.hsbToRgb = function (h, s, v) {
 
-/**
-* Converts an HSL color value to RGB. Conversion formula
-* adapted from http://en.wikipedia.org/wiki/HSL_color_space.
-*
-* @param   Number  h       The hue
-* @param   Number  s       The saturation
-* @param   Number  l       The lightness
-* @return  Array           The RGB representation
-*/
+    var r, g, b, i, f, p, q, t;
 
-colz.hue2rgb = function (p, q, t) {
-  if (t < 0) { t += 1; }
-  if (t > 1) { t -= 1; }
-  if (t < 1 / 6) { return p + (q - p) * 6 * t; }
-  if (t < 1 / 2) { return q; }
-  if (t < 2 / 3) { return p + (q - p) * (2 / 3 - t) * 6; }
-  return p;
-};
+    // h = h / 360;
+    if (s === 0) { return [0, 0, 0]; }
 
-colz.hslToRgb = function () {
-  var arg, r, g, b, h, s, l, q, p;
+    s = s / 100;
+    v = v / 100;
+    h = h / 60;
 
-  arg = arguments;
+    i = Math.floor(h);
+    f = h - i;
+    p = v * (1 - s);
+    q = v * (1 - (s * f));
+    t = v * (1 - (s * (1 - f)));
 
-  if (typeof arg[0] === 'number') {
-    h = arg[0] / 360;
-    s = arg[1] / 100;
-    l = arg[2] / 100;
-  } else {
-    h = arg[0][0] / 360;
-    s = arg[0][1] / 100;
-    l = arg[0][2] / 100;
-  }
-
-  if (s === 0) {
-    r = g = b = l; // achromatic
-  } else {
-
-    q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-    p = 2 * l - q;
-    r = colz.hue2rgb(p, q, h + 1 / 3);
-    g = colz.hue2rgb(p, q, h);
-    b = colz.hue2rgb(p, q, h - 1 / 3);
-  }
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-};
-
-/**
- * Converts an RGB color value to HSB / HSV. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
- *
- * @param   Number  r       The red color value
- * @param   Number  g       The green color value
- * @param   Number  b       The blue color value
- * @return  Array           The HSB representation
- */
-colz.rgbToHsb = function (r, g, b) {
-  var max, min, h, s, v, d;
-
-  r = r / 255;
-  g = g / 255;
-  b = b / 255;
-
-  max = Math.max(r, g, b);
-  min = Math.min(r, g, b);
-  v = max;
-
-  d = max - min;
-  s = max === 0 ? 0 : d / max;
-
-  if (max === min) {
-    h = 0; // achromatic
-  } else {
-    switch (max) {
-    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-    case g: h = (b - r) / d + 2; break;
-    case b: h = (r - g) / d + 4; break;
+    if (i === 0) {
+      r = v; g = t; b = p;
+    } else if (i === 1) {
+      r = q; g = v; b = p;
+    } else if (i === 2) {
+      r = p; g = v; b = t;
+    } else if (i === 3) {
+      r = p; g = q; b = v;
+    } else if (i === 4) {
+      r = t; g = p; b = v;
+    } else if (i === 5) {
+      r = v; g = p; b = q;
     }
-    h /= 6;
-  }
 
-  // map top 360,100,100
-  h = Math.round(h * 360);
-  s = Math.round(s * 100);
-  v = Math.round(v * 100);
+    r = Math.floor(r * 255);
+    g = Math.floor(g * 255);
+    b = Math.floor(b * 255);
 
-  return [h, s, v];
-};
+    return [r, g, b];
+  };
 
-/**
-* Converts an HSB / HSV color value to RGB. Conversion formula
-* adapted from http://en.wikipedia.org/wiki/HSV_color_space.
-*
-* @param   Number  h       The hue
-* @param   Number  s       The saturation
-* @param   Number  v       The value
-* @return  Array           The RGB representation
-*/
-colz.hsbToRgb = function (h, s, v) {
+  /* Convert from Hsv */
+  hsbToHsl = colz.hsbToHsl = function (h, s, b) {
+    return colz.rgbToHsl(colz.hsbToRgb(h, s, b));
+  };
 
-  var r, g, b, i, f, p, q, t;
+  /* Alias */
+  hsvToHsl = colz.hsvToHsl = colz.hsbToHsl;
+  hsvToRgb = colz.hsvToRgb = colz.hsbToRgb;
 
-  // h = h / 360;
-  if (s === 0) { return [0, 0, 0]; }
+  /*
+   ==================================
+   Color Scheme Builder
+   ==================================
+  */
 
-  s = s / 100;
-  v = v / 100;
-  h = h / 60;
+  ColorScheme = colz.ColorScheme = function (color_val, angle_array) {
+    this.palette = [];
 
-  i = Math.floor(h);
-  f = h - i;
-  p = v * (1 - s);
-  q = v * (1 - (s * f));
-  t = v * (1 - (s * (1 - f)));
+    if (angle_array === undefined && color_val instanceof Array) {
+      // Asume you passing a color array ['#f00','#0f0'...]
+      this.createFromColors(color_val);
+    } else {
+      // Create scheme from color + hue angles
+      this.createFromAngles(color_val, angle_array);
+    }
+  };
 
-  if (i === 0) {
-    r = v; g = t; b = p;
-  } else if (i === 1) {
-    r = q; g = v; b = p;
-  } else if (i === 2) {
-    r = p; g = v; b = t;
-  } else if (i === 3) {
-    r = p; g = q; b = v;
-  } else if (i === 4) {
-    r = t; g = p; b = v;
-  } else if (i === 5) {
-    r = v; g = p; b = q;
-  }
+  var colorSchemePrototype = ColorScheme.prototype;
 
-  r = Math.floor(r * 255);
-  g = Math.floor(g * 255);
-  b = Math.floor(b * 255);
+  colorSchemePrototype.createFromColors = function (color_val) {
+    for (var i in color_val) {
+      //console.log(color_val[i]);
+      this.palette.push(new Color(color_val[i]));
+    }
+    return this.palette;
+  }; // createFromColors
 
-  return [r, g, b];
-};
+  colorSchemePrototype.createFromAngles = function (color_val, angle_array) {
 
-/* Convert from Hsv */
-colz.hsbToHsl = function (h, s, b) {
-  return colz.rgbToHsl(colz.hsbToRgb(h, s, b));
-};
+    this.palette.push(new Color(color_val));
 
-/* Alias */
-colz.hsvToHsl = colz.hsbToHsl;
-colz.hsvToRgb = colz.hsbToRgb;
+    for (var i in angle_array) {
+      var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
+      this.palette.push(new Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
+    }
+    return this.palette;
+  }; // createFromAngles
 
-/*
- ==================================
- Color Scheme Builder
- ==================================
-*/
+  /* Complementary colors constructors */
+  ColorScheme.Compl = function (color_val) {
+    return new ColorScheme(color_val, [180]);
+  };
 
-colz.ColorScheme = function (color_val, angle_array) {
-  this.palette = [];
+  /* Triad */
+  ColorScheme.Triad = function (color_val) {
+    return new ColorScheme(color_val, [120,240]);
+  };
 
-  if (angle_array === undefined && color_val instanceof Array) {
-    // Asume you passing a color array ['#f00','#0f0'...]
-    this.createFromColors(color_val);
-  } else {
-    // Create scheme from color + hue angles
-    this.createFromAngles(color_val, angle_array);
-  }
-};
+  /* Tretrad */
+  ColorScheme.Tetrad = function (color_val) {
+    return new ColorScheme(color_val, [60,180,240]);
+  };
 
-colz.ColorScheme.prototype.createFromColors = function (color_val) {
-  for (var i in color_val) {
-    //console.log(color_val[i]);
-    this.palette.push(new colz.Color(color_val[i]));
-  }
-  return this.palette;
-}; // createFromColors
+  /* Analogous */
+  ColorScheme.Analog = function (color_val) {
+    return new ColorScheme(color_val, [-45,45]);
+  };
 
-colz.ColorScheme.prototype.createFromAngles = function (color_val, angle_array) {
+  /* Split complementary */
+  ColorScheme.Split = function (color_val) {
+    return new ColorScheme(color_val, [150,210]);
+  };
 
-  this.palette.push(new colz.Color(color_val));
+  /* Accented Analogous */
+  ColorScheme.Accent = function (color_val) {
+    return new ColorScheme(color_val, [-45,45,180]);
+  };
 
-  for (var i in angle_array) {
-    var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
-    this.palette.push(new colz.Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
-  }
-  return this.palette;
-}; // createFromAngles
-
-/* Complementary colors constructors */
-colz.ColorScheme.Compl = function (color_val) {
-  return new colz.ColorScheme(color_val, [180]);
-};
-
-/* Triad */
-colz.ColorScheme.Triad = function (color_val) {
-  return new colz.ColorScheme(color_val, [120,240]);
-};
-
-/* Tretrad */
-colz.ColorScheme.Tetrad = function (color_val) {
-  return new colz.ColorScheme(color_val, [60,180,240]);
-};
-
-/* Analogous */
-colz.ColorScheme.Analog = function (color_val) {
-  return new colz.ColorScheme(color_val, [-45,45]);
-};
-
-/* Split complementary */
-colz.ColorScheme.Split = function (color_val) {
-  return new colz.ColorScheme(color_val, [150,210]);
-};
-
-/* Accented Analogous */
-colz.ColorScheme.Accent = function (color_val) {
-  return new colz.ColorScheme(color_val, [-45,45,180]);
-};
+  return colz;
+});
