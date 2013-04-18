@@ -34,6 +34,7 @@
   /* Namespace container */
 
   var
+    floor = Math.floor,
     round = Math.round,
     toString = 'toString',
     colz = colz || {},
@@ -136,7 +137,11 @@
   var colorPrototype = Color.prototype;
 
   colorPrototype.init = function (arg) {
-    var _this = this;
+    var
+      _this = this,
+      rgb,
+      hsl
+      ;
 
     // Argument is string -> Hex color
     if (typeof arg[0] === 'string') {
@@ -149,10 +154,10 @@
 
       _this.hex = arg[0].toLowerCase();
 
-      _this.rgb = new Rgb(hexToRgb(_this.hex));
-      _this.r = _this.rgb.r;
-      _this.g = _this.rgb.g;
-      _this.b = _this.rgb.b;
+      rgb = _this.rgb = new Rgb(hexToRgb(_this.hex));
+      _this.r = rgb.r;
+      _this.g = rgb.g;
+      _this.b = rgb.b;
       _this.a = 1.0;
       _this.rgba = new Rgba([_this.r, _this.g, _this.b, _this.a]);
     }
@@ -190,10 +195,10 @@
     }
 
     // Common
-    _this.hsl = new Hsl(colz.rgbToHsl([_this.r, _this.g, _this.b]));
-    _this.h = _this.hsl.h;
-    _this.s = _this.hsl.s;
-    _this.l = _this.hsl.l;
+    hsl = _this.hsl = new Hsl(rgbToHsl([_this.r, _this.g, _this.b]));
+    _this.h = hsl.h;
+    _this.s = hsl.s;
+    _this.l = hsl.l;
     _this.hsla = new Hsla([_this.h, _this.s, _this.l, _this.a]);
   }; // init
 
@@ -231,20 +236,23 @@
   };
 
   colorPrototype.updateFromHsl = function () {
-    // Updates Rgb
-    this.rgb = null;
-    this.rgb = new Rgb(colz.hslToRgb([this.h, this.s, this.l]));
+    var
+      _this = this,
+      rgb
+      ;
 
-    this.r = this.rgb.r;
-    this.g = this.rgb.g;
-    this.b = this.rgb.b;
-    this.rgba.r = this.rgb.r;
-    this.rgba.g = this.rgb.g;
-    this.rgba.b = this.rgb.b;
+    // Updates Rgb
+    rgb = _this.rgb = new Rgb(hslToRgb([_this.h, _this.s, _this.l]));
+
+    _this.r = rgb.r;
+    _this.g = rgb.g;
+    _this.b = rgb.b;
+    _this.rgba.r = rgb.r;
+    _this.rgba.g = rgb.g;
+    _this.rgba.b = rgb.b;
 
     // Updates Hex
-    this.hex = null;
-    this.hex = rgbToHex([this.r, this.g, this.b]);
+    _this.hex = rgbToHex([_this.r, _this.g, _this.b]);
   };
 
   /*
@@ -385,9 +393,9 @@
 
       q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       p = 2 * l - q;
-      r = colz.hue2rgb(p, q, h + 1 / 3);
-      g = colz.hue2rgb(p, q, h);
-      b = colz.hue2rgb(p, q, h - 1 / 3);
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
     }
     return [round(r * 255), round(g * 255), round(b * 255)];
   };
@@ -454,7 +462,7 @@
     v = v / 100;
     h = h / 60;
 
-    i = Math.floor(h);
+    i = floor(h);
     f = h - i;
     p = v * (1 - s);
     q = v * (1 - (s * f));
@@ -474,21 +482,21 @@
       r = v; g = p; b = q;
     }
 
-    r = Math.floor(r * 255);
-    g = Math.floor(g * 255);
-    b = Math.floor(b * 255);
+    r = floor(r * 255);
+    g = floor(g * 255);
+    b = floor(b * 255);
 
     return [r, g, b];
   };
 
   /* Convert from Hsv */
   hsbToHsl = colz.hsbToHsl = function (h, s, b) {
-    return colz.rgbToHsl(colz.hsbToRgb(h, s, b));
+    return rgbToHsl(hsbToRgb(h, s, b));
   };
 
   /* Alias */
-  hsvToHsl = colz.hsvToHsl = colz.hsbToHsl;
-  hsvToRgb = colz.hsvToRgb = colz.hsbToRgb;
+  hsvToHsl = colz.hsvToHsl = hsbToHsl;
+  hsvToRgb = colz.hsvToRgb = hsbToRgb;
 
   /*
    ==================================
@@ -519,14 +527,16 @@
   }; // createFromColors
 
   colorSchemePrototype.createFromAngles = function (color_val, angle_array) {
+    var palette = this.palette;
 
-    this.palette.push(new Color(color_val));
+    palette.push(new Color(color_val));
 
     for (var i in angle_array) {
-      var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
-      this.palette.push(new Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
+
+      var tempHue = (palette[0].h  + angle_array[i]) % 360;
+      palette.push(new Color(hslToRgb([tempHue, palette[0].s, palette[0].l])));
     }
-    return this.palette;
+    return palette;
   }; // createFromAngles
 
   /* Complementary colors constructors */
