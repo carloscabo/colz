@@ -36,6 +36,7 @@
   var
     floor = Math.floor,
     round = Math.round,
+    pow = Math.pow,
     toString = 'toString',
     colz = colz || {},
     Rgb,
@@ -48,14 +49,15 @@
     componentToHex,
     rgbToHex,
     rgbToHsl,
-    hue2rgb,
-    hslToRgb,
     rgbToHsb,
+    hueToRgb,
+    hslToRgb,
     hsbToRgb,
     hsbToHsl,
     hsvToHsl,
     hsvToRgb,
-    randomColor
+    randomColor,
+    getRelativeLuminance
     ;
 
   /*
@@ -262,7 +264,7 @@
   */
 
   randomColor = colz.randomColor = function () {
-    var r = "#" + Math.random().toString(16).slice(2, 8);
+    var r = '#' + Math.random().toString(16).slice(2, 8);
     return new Color(r);
   };
 
@@ -277,7 +279,7 @@
 
   componentToHex = colz.componentToHex = function (c) {
     var hex = c.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
+    return hex.length === 1 ? '0' + hex : hex;
   };
 
   // You can pass 3 numeric values or 1 Array
@@ -295,7 +297,7 @@
       g = arg[0][1];
       b = arg[0][2];
     }
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
   };
 
   /**
@@ -363,7 +365,7 @@
   * @return  Array           The RGB representation
   */
 
-  hue2rgb = colz.hue2rgb = function (p, q, t) {
+  hueToRgb = colz.hueToRgb = function (p, q, t) {
     if (t < 0) { t += 1; }
     if (t > 1) { t -= 1; }
     if (t < 1 / 6) { return p + (q - p) * 6 * t; }
@@ -393,9 +395,9 @@
 
       q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1 / 3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1 / 3);
+      r = hueToRgb(p, q, h + 1 / 3);
+      g = hueToRgb(p, q, h);
+      b = hueToRgb(p, q, h - 1 / 3);
     }
     return [round(r * 255), round(g * 255), round(b * 255)];
   };
@@ -498,6 +500,30 @@
   hsvToHsl = colz.hsvToHsl = hsbToHsl;
   hsvToRgb = colz.hsvToRgb = hsbToRgb;
 
+  /* Formula adapted from W3C accesibility recomendations */
+  /* > 0.35 light color */
+  getRelativeLuminance = colz.getRelativeLuminance = function () {
+    var arg, r, g, b, rgb;
+    arg = arguments;
+
+    // Assumed to be
+    if (typeof arg[0] === 'string') {
+      rgb = hexToRgb(arg[0]);
+      r = rgb[0] / 255;
+      g = rgb[1] / 255;
+      b = rgb[2] / 255;
+    } else {
+      r = arg[0] / 255;
+      g = arg[1] / 255;
+      b = arg[2] / 255;
+    }
+
+    r = (r <= 0.03928) ? r/12.92 : r = pow((r+0.055)/1.055, 2.4);
+    g = (g <= 0.03928) ? g/12.92 : g = pow((g+0.055)/1.055, 2.4);
+    b = (b <= 0.03928) ? b/12.92 : b = pow((b+0.055)/1.055, 2.4);
+
+    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+  };
   /*
    ==================================
    Color Scheme Builder

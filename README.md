@@ -58,6 +58,20 @@ And two public methods to convert HSB Colors (the color-space used in Adobe appl
 
     colz.hsbToRgb(204, 100, 74); // [249, 132, 14]
     colz.hsbToHsl(204, 100, 74); // [204, 100, 37]
+    
+Sometimes its usefull to get a relative value representing the darkness / lightness of a color. Maybe helpfull to decide the color of a text to be more readable over a colored background, for instance.
+
+I adapted the W3C formula to get the "Relative Luminance" of a color, I'm my test seems that a color with a value > 0.35 its light enough to read a black text over it.
+
+Must be said that this value could vary depending on the "gamma" value of the user display, but as far I know the "gamma" value is unreacheable from Javascript so its the best approximation I can do right now.
+
+
+    colz.getRelativeLuminance(201,50,165); // RGB
+    colz.getRelativeLuminance('#c932a5'); //
+    // Both return 0.17415323977742278 
+    
+More info about the "Relative Luminance" at:
+http://www.w3.org/TR/WCAG20/#relativeluminancedef
 
 Color Schemes / Paletes
 =======================
@@ -103,4 +117,7 @@ To ease the generation of complementary colors ColorScheme provides some "shortc
     
 Take a look to the colz.test.js to see some working samples.
 
+Thanks
+======
 
+Thanks to Alex Gorbatchev for his help adapting it to "Universal Module Format" and minification (https://github.com/alexgorbatchev) and @derodo for its comments about gamma.
