@@ -5,6 +5,9 @@ Colz. Javascript library to convert colors between RGB / Hex / HSL / HSV / HSB c
 
 Also provides some helpers to create "color schemes" or "color palettes".
 
+You can see a living example of it usage at:  
+[http://rgb.to](http://rgb.to/ "Rgb to color conversion utility").
+
 Usage
 =====
 
