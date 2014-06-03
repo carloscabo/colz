@@ -103,4 +103,9 @@ To ease the generation of complementary colors ColorScheme provides some "shortc
     
 Take a look to the colz.test.js to see some working samples.
 
+Updates
+=======
+
+- 2014 / 06 / 03 Ie6/7 bg fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
+
 
