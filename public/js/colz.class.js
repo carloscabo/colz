@@ -34,9 +34,7 @@
   /* Namespace container */
 
   var
-    floor = Math.floor,
     round = Math.round,
-    pow = Math.pow,
     toString = 'toString',
     colz = colz || {},
     Rgb,
@@ -49,15 +47,14 @@
     componentToHex,
     rgbToHex,
     rgbToHsl,
-    rgbToHsb,
-    hueToRgb,
+    hue2rgb,
     hslToRgb,
+    rgbToHsb,
     hsbToRgb,
     hsbToHsl,
     hsvToHsl,
     hsvToRgb,
-    randomColor,
-    getRelativeLuminance
+    randomColor
     ;
 
   /*
@@ -139,16 +136,12 @@
   var colorPrototype = Color.prototype;
 
   colorPrototype.init = function (arg) {
-    var
-      _this = this,
-      rgb,
-      hsl
-      ;
+    var _this = this;
 
     // Argument is string -> Hex color
     if (typeof arg[0] === 'string') {
       // Add initial '#' if missing
-      if (arg[0][0] !== '#') { arg[0] = '#' + arg[0]; }
+      if (arg[0].charAt(0) !== '#') { arg[0] = '#' + arg[0]; }
       // If Hex in #fff format convert to #ffffff
       if (arg[0].length < 7) {
         arg[0] = '#' + arg[0][1] + arg[0][1] + arg[0][2] + arg[0][2] + arg[0][3] + arg[0][3];
@@ -156,10 +149,10 @@
 
       _this.hex = arg[0].toLowerCase();
 
-      rgb = _this.rgb = new Rgb(hexToRgb(_this.hex));
-      _this.r = rgb.r;
-      _this.g = rgb.g;
-      _this.b = rgb.b;
+      _this.rgb = new Rgb(hexToRgb(_this.hex));
+      _this.r = _this.rgb.r;
+      _this.g = _this.rgb.g;
+      _this.b = _this.rgb.b;
       _this.a = 1.0;
       _this.rgba = new Rgba([_this.r, _this.g, _this.b, _this.a]);
     }
@@ -197,10 +190,10 @@
     }
 
     // Common
-    hsl = _this.hsl = new Hsl(rgbToHsl([_this.r, _this.g, _this.b]));
-    _this.h = hsl.h;
-    _this.s = hsl.s;
-    _this.l = hsl.l;
+    _this.hsl = new Hsl(colz.rgbToHsl([_this.r, _this.g, _this.b]));
+    _this.h = _this.hsl.h;
+    _this.s = _this.hsl.s;
+    _this.l = _this.hsl.l;
     _this.hsla = new Hsla([_this.h, _this.s, _this.l, _this.a]);
   }; // init
 
@@ -238,23 +231,20 @@
   };
 
   colorPrototype.updateFromHsl = function () {
-    var
-      _this = this,
-      rgb
-      ;
-
     // Updates Rgb
-    rgb = _this.rgb = new Rgb(hslToRgb([_this.h, _this.s, _this.l]));
+    this.rgb = null;
+    this.rgb = new Rgb(colz.hslToRgb([this.h, this.s, this.l]));
 
-    _this.r = rgb.r;
-    _this.g = rgb.g;
-    _this.b = rgb.b;
-    _this.rgba.r = rgb.r;
-    _this.rgba.g = rgb.g;
-    _this.rgba.b = rgb.b;
+    this.r = this.rgb.r;
+    this.g = this.rgb.g;
+    this.b = this.rgb.b;
+    this.rgba.r = this.rgb.r;
+    this.rgba.g = this.rgb.g;
+    this.rgba.b = this.rgb.b;
 
     // Updates Hex
-    _this.hex = rgbToHex([_this.r, _this.g, _this.b]);
+    this.hex = null;
+    this.hex = rgbToHex([this.r, this.g, this.b]);
   };
 
   /*
@@ -264,7 +254,7 @@
   */
 
   randomColor = colz.randomColor = function () {
-    var r = '#' + Math.random().toString(16).slice(2, 8);
+    var r = "#" + Math.random().toString(16).slice(2, 8);
     return new Color(r);
   };
 
@@ -279,7 +269,7 @@
 
   componentToHex = colz.componentToHex = function (c) {
     var hex = c.toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
+    return hex.length === 1 ? "0" + hex : hex;
   };
 
   // You can pass 3 numeric values or 1 Array
@@ -297,7 +287,7 @@
       g = arg[0][1];
       b = arg[0][2];
     }
-    return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
   };
 
   /**
@@ -365,7 +355,7 @@
   * @return  Array           The RGB representation
   */
 
-  hueToRgb = colz.hueToRgb = function (p, q, t) {
+  hue2rgb = colz.hue2rgb = function (p, q, t) {
     if (t < 0) { t += 1; }
     if (t > 1) { t -= 1; }
     if (t < 1 / 6) { return p + (q - p) * 6 * t; }
@@ -395,9 +385,9 @@
 
       q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       p = 2 * l - q;
-      r = hueToRgb(p, q, h + 1 / 3);
-      g = hueToRgb(p, q, h);
-      b = hueToRgb(p, q, h - 1 / 3);
+      r = colz.hue2rgb(p, q, h + 1 / 3);
+      g = colz.hue2rgb(p, q, h);
+      b = colz.hue2rgb(p, q, h - 1 / 3);
     }
     return [round(r * 255), round(g * 255), round(b * 255)];
   };
@@ -464,7 +454,7 @@
     v = v / 100;
     h = h / 60;
 
-    i = floor(h);
+    i = Math.floor(h);
     f = h - i;
     p = v * (1 - s);
     q = v * (1 - (s * f));
@@ -484,46 +474,22 @@
       r = v; g = p; b = q;
     }
 
-    r = floor(r * 255);
-    g = floor(g * 255);
-    b = floor(b * 255);
+    r = Math.floor(r * 255);
+    g = Math.floor(g * 255);
+    b = Math.floor(b * 255);
 
     return [r, g, b];
   };
 
   /* Convert from Hsv */
   hsbToHsl = colz.hsbToHsl = function (h, s, b) {
-    return rgbToHsl(hsbToRgb(h, s, b));
+    return colz.rgbToHsl(colz.hsbToRgb(h, s, b));
   };
 
   /* Alias */
-  hsvToHsl = colz.hsvToHsl = hsbToHsl;
-  hsvToRgb = colz.hsvToRgb = hsbToRgb;
+  hsvToHsl = colz.hsvToHsl = colz.hsbToHsl;
+  hsvToRgb = colz.hsvToRgb = colz.hsbToRgb;
 
-  /* Formula adapted from W3C accesibility recomendations */
-  /* > 0.35 light color */
-  getRelativeLuminance = colz.getRelativeLuminance = function () {
-    var arg, r, g, b, rgb;
-    arg = arguments;
-
-    // Assumed to be
-    if (typeof arg[0] === 'string') {
-      rgb = hexToRgb(arg[0]);
-      r = rgb[0] / 255;
-      g = rgb[1] / 255;
-      b = rgb[2] / 255;
-    } else {
-      r = arg[0] / 255;
-      g = arg[1] / 255;
-      b = arg[2] / 255;
-    }
-
-    r = (r <= 0.03928) ? r/12.92 : r = pow((r+0.055)/1.055, 2.4);
-    g = (g <= 0.03928) ? g/12.92 : g = pow((g+0.055)/1.055, 2.4);
-    b = (b <= 0.03928) ? b/12.92 : b = pow((b+0.055)/1.055, 2.4);
-
-    return (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
-  };
   /*
    ==================================
    Color Scheme Builder
@@ -553,16 +519,14 @@
   }; // createFromColors
 
   colorSchemePrototype.createFromAngles = function (color_val, angle_array) {
-    var palette = this.palette;
 
-    palette.push(new Color(color_val));
+    this.palette.push(new Color(color_val));
 
     for (var i in angle_array) {
-
-      var tempHue = (palette[0].h  + angle_array[i]) % 360;
-      palette.push(new Color(hslToRgb([tempHue, palette[0].s, palette[0].l])));
+      var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
+      this.palette.push(new Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
     }
-    return palette;
+    return this.palette;
   }; // createFromAngles
 
   /* Complementary colors constructors */

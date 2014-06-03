@@ -137,13 +137,6 @@ $(document).ready(function() {
     deepEqual(colz.rgbToHsl(18, 18, 18), [0, 0, 7]);
   });
 
-  test( "Get Relative Luminance Value", function() {
-
-    // Photoshop HSB color
-    equal(colz.getRelativeLuminance('#c932a5'), 0.17415323977742278);
-    equal(colz.getRelativeLuminance(201,50,165), 0.17415323977742278);
-  });
-
   // Color schemes visual samples
   var sch = [];
   var tcol = '#F43E71';
