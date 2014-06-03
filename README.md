@@ -106,6 +106,7 @@ Take a look to the colz.test.js to see some working samples.
 Updates
 =======
 
-- 2014 / 06 / 03 Ie6/7 bg fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
+- 2014 / 06 / 03 Ie6/7 bug fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
+- 2014 / 06 / 03 Bad calculation with hsv (v == 0) bug fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
 
 

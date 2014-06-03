@@ -448,7 +448,7 @@
     var r, g, b, i, f, p, q, t;
 
     // h = h / 360;
-    if (s === 0) { return [0, 0, 0]; }
+    if (v === 0) { return [0, 0, 0]; }
 
     s = s / 100;
     v = v / 100;
