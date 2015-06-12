@@ -108,5 +108,6 @@ Updates
 
 - 2014 / 06 / 03 Ie6/7 bug fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
 - 2014 / 06 / 03 Bad calculation with hsv (v == 0) bug fixed. Thanks to [aiyuchen](https://github.com/aiyuchen)
+- 2015 / 06 / 12 Added "rebeccapurple" color to **RGB.to** http://rgb.to/rebeccapurple . Thanks to [davidhund](https://github.com/davidhund)
 
 
