@@ -512,8 +512,10 @@
 
   colorSchemePrototype.createFromColors = function (color_val) {
     for (var i in color_val) {
-      //console.log(color_val[i]);
-      this.palette.push(new Color(color_val[i]));
+      if (color_val.hasOwnProperty(i)) {
+        //console.log(color_val[i]);
+        this.palette.push(new Color(color_val[i]));
+      }
     }
     return this.palette;
   }; // createFromColors
@@ -523,8 +525,10 @@
     this.palette.push(new Color(color_val));
 
     for (var i in angle_array) {
-      var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
-      this.palette.push(new Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
+      if (angle_array.hasOwnProperty(i)) {
+        var tempHue = (this.palette[0].h  + angle_array[i]) % 360;
+        this.palette.push(new Color(colz.hslToRgb([tempHue, this.palette[0].s, this.palette[0].l])));
+      }
     }
     return this.palette;
   }; // createFromAngles
