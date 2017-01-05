@@ -103,6 +103,19 @@ To ease the generation of complementary colors ColorScheme provides some "shortc
     
 Take a look to the colz.test.js to see some working samples.
 
+Projects using colz.js
+======================
+
+- <http://rgb.to>
+- <http://palett.es>
+
+Ports to other languages
+========================
+
+- [colz-python](https://github.com/carloscabo/colz-python)
+- [colz-php](https://github.com/carloscabo/colz-php)
+
+
 Updates
 =======
 
